@@ -3,13 +3,22 @@
     "types": ["character"],
     "templates": {
       "character": {
-        "stats": {},
-        "combat": {},
-        "skills": {},
-        "story": {},
-        "inventory": {},
-        "abilities": {},
-        "conditions": {}
+        "base": {
+          "skr": 5,   // Скорость
+          "chkr": 1,  // Чакра
+          "pcht": 2,  // Печати
+          "sil": 0,   // Сила
+          "rkc": 0,   // Реакция
+          "vyn": 5    // Выносливость
+        },
+        "resources": {
+          "hp":     { "value": 100, "max": 100 },
+          "shield": { "value": 0,   "max": 0   },
+          "chakra": { "value": 100, "max": 100 }
+        },
+        "story": {
+          "biography": ""
+        }
       }
     }
   }
