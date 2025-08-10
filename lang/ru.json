@@ -1,0 +1,11 @@
+{
+  "ShinobiSystem": {
+    "Stats": "Статы",
+    "Combat": "Бой",
+    "Skills": "Навыки",
+    "Story": "История",
+    "Inventory": "Инвентарь",
+    "Abilities": "Способности",
+    "Conditions": "Состояния"
+  }
+}

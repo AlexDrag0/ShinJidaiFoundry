@@ -1,0 +1,16 @@
+{
+  "Actor": {
+    "types": ["character"],
+    "templates": {
+      "character": {
+        "stats": {},
+        "combat": {},
+        "skills": {},
+        "story": {},
+        "inventory": {},
+        "abilities": {},
+        "conditions": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "shinjidaishinobi",
+  "title": "Shin Jidai: Shinobi",
+  "description": "Авторская ролевая система по мотивам Наруто для Foundry VTT.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "AlexDrag0",
+      "url": ""
+    }
+  ],
+  "esmodules": [
+    "shinobi.js"
+  ],
+  "styles": [
+    "css/shinobi.css"
+  ],
+  "packs": [],
+  "languages": [
+    {
+      "lang": "ru",
+      "name": "Русский",
+      "path": "lang/ru.json"
+    }
+  ],
+  "socket": true,
+  "grid": {
+    "distance": 1,
+    "units": "m"
+  },
+  "primaryTokenAttribute": "attributes.hp"
+}

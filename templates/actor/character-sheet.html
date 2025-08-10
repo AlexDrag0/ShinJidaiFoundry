@@ -1,0 +1,109 @@
+<form class="shinobi-sheet" autocomplete="off">
+  <header class="sheet-header">
+    <h1><input name="name" type="text" value="{{actor.name}}" placeholder="Имя персонажа" /></h1>
+  </header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="stats">📊 Статы</a>
+    <a class="item" data-tab="combat">🗡 Бой</a>
+    <a class="item" data-tab="skills">🎯 Навыки</a>
+    <a class="item" data-tab="story">📜 История</a>
+    <a class="item" data-tab="inventory">📦 Инвентарь</a>
+    <a class="item" data-tab="abilities">⚡ Способности</a>
+    <a class="item" data-tab="conditions">💀 Состояния</a>
+  </nav>
+
+  <section class="sheet-body">
+    <!-- 📊 Статы -->
+    <div class="tab" data-group="primary" data-tab="stats">
+      <div class="grid two">
+        <section>
+          <h2>Основные характеристики</h2>
+          <div class="stat-grid">
+            <label>СКР (Скорость)
+              <input type="number" min="0" max="10" name="system.base.skr"  value="{{system.base.skr}}" />
+            </label>
+            <label>ЧКР (Чакра)
+              <input type="number" min="0" max="10" name="system.base.chkr" value="{{system.base.chkr}}" />
+            </label>
+            <label>ПЧТ (Печати)
+              <input type="number" min="0" max="10" name="system.base.pcht" value="{{system.base.pcht}}" />
+            </label>
+            <label>СИЛ (Сила)
+              <input type="number" min="0" max="10" name="system.base.sil"  value="{{system.base.sil}}" />
+            </label>
+            <label>РКЦ (Реакция)
+              <input type="number" min="0" max="10" name="system.base.rkc"  value="{{system.base.rkc}}" />
+            </label>
+            <label>ВЫН (Выносливость)
+              <input type="number" min="0" max="10" name="system.base.vyn"  value="{{system.base.vyn}}" />
+            </label>
+          </div>
+
+          <h2>Производные</h2>
+          <table class="info">
+            <tr><th>Скорость (гексов/ход)</th><td>{{derived.speed}}</td></tr>
+            <tr><th>Печати (действий/ход)</th><td>{{derived.seals}}</td></tr>
+            <tr><th>Чакра (макс)</th><td>{{derived.chakraMax}}</td></tr>
+            <tr><th>Покров чакры (макс)</th><td>{{derived.shieldMax}}</td></tr>
+          </table>
+
+          <h3>Пороги здоровья</h3>
+          <table class="info">
+            <tr><th>Потеря сознания</th><td>{{derived.thresholds.knockdown}}</td></tr>
+            <tr><th>Увечье</th><td>{{derived.thresholds.injury}}</td></tr>
+            <tr><th>Предсмертное сост.</th><td>{{derived.thresholds.nearDeath}}</td></tr>
+          </table>
+        </section>
+
+        <section>
+          <h2>Ресурсы (текущие значения)</h2>
+          <label>Текущее HP
+            <input type="number" name="system.resources.hp.value" value="{{system.resources.hp.value}}" />
+          </label>
+          <label>Текущий Покров чакры
+            <input type="number" name="system.resources.shield.value" value="{{system.resources.shield.value}}" />
+          </label>
+          <label>Текущая Чакра
+            <input type="number" name="system.resources.chakra.value" value="{{system.resources.chakra.value}}" />
+          </label>
+
+          <p class="hint">
+            Макс. значения рассчитываются сверху: Чакра = ЧКР×100, Покров = ВЫН×5 + СИЛ×2.
+            Позже сделаем автоподстановку max-лимитов и прогресс-бары.
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <!-- 🗡 Бой -->
+    <div class="tab" data-group="primary" data-tab="combat">
+      <p>Здесь появятся кнопки: Уворот (d20 + РКЦ), Атака, применение техник и т.д.</p>
+    </div>
+
+    <!-- 🎯 Навыки -->
+    <div class="tab" data-group="primary" data-tab="skills">
+      <p>Профессиональные умения (Ниндзюцу, Гендзюцу, Тайдзюцу, Медзюцу…).</p>
+    </div>
+
+    <!-- 📜 История -->
+    <div class="tab" data-group="primary" data-tab="story">
+      <textarea name="system.story.biography" rows="8" placeholder="Биография, заметки…">{{system.story.biography}}</textarea>
+    </div>
+
+    <!-- 📦 Инвентарь -->
+    <div class="tab" data-group="primary" data-tab="inventory">
+      <p>Позже добавим список предметов и автоподсчёт веса.</p>
+    </div>
+
+    <!-- ⚡ Способности -->
+    <div class="tab" data-group="primary" data-tab="abilities">
+      <p>Здесь будут техники и их кнопки “Применить”.</p>
+    </div>
+
+    <!-- 💀 Состояния -->
+    <div class="tab" data-group="primary" data-tab="conditions">
+      <p>Состояния: нокдаун, увечье, стабилизация и пр.</p>
+    </div>
+  </section>
+</form>
