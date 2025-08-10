@@ -1,4 +1,4 @@
-// === Shin Jidai: Shinobi — Character Sheet (v13-safe) ===
+// === Shin Jidai: Shinobi — Character Sheet (stable) ===
 
 class ShinobiCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -7,24 +7,24 @@ class ShinobiCharacterSheet extends ActorSheet {
       template: "systems/shinjidaishinobi/templates/actor/character-sheet.html",
       width: 820,
       height: 680,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "stats" }]
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "stats" }],
+      submitOnChange: false // ⛔ не авто-сабмитим: сохраняем сами
     });
   }
 
-  /** Корректно сохраняем данные формы в актора */
+  /** Сохранение формы (когда явный submit/save) */
   async _updateObject(event, formData) {
     const data = foundry.utils.expandObject(formData);
     return this.actor.update(data);
   }
 
-  /** Данные для шаблона + производные */
+  /** Данные + производные */
   getData(options) {
     const ctx = super.getData(options);
     const sys = ctx.actor.system ?? {};
     const base = sys.base ?? {};
     const N = v => Number(v ?? 0);
 
-    // Базовые харак-ки (дефолты, чтобы поля не пустели)
     const skr  = N(base.skr);
     const chkr = N(base.chkr);
     const pcht = N(base.pcht);
@@ -32,7 +32,6 @@ class ShinobiCharacterSheet extends ActorSheet {
     const rkc  = N(base.rkc);
     const vyn  = N(base.vyn);
 
-    // Производные
     const chakraMax  = chkr * 100;
     const shieldMax  = vyn * 5 + sil * 2;
     const thresholds = {
@@ -41,7 +40,6 @@ class ShinobiCharacterSheet extends ActorSheet {
       nearDeath: vyn * 10 + 50
     };
 
-    // Ресурсы и проценты для баров
     const res = sys.resources ?? { hp:{value:0,max:0}, shield:{value:0,max:0}, chakra:{value:0,max:0} };
     const pct = (val, max) => {
       const m = Math.max(0, Number(max || 0));
@@ -66,39 +64,91 @@ class ShinobiCharacterSheet extends ActorSheet {
     return ctx;
   }
 
-  /** Листенеры */
   activateListeners(html) {
     super.activateListeners(html);
-    // Сначала сохранить форму, затем пересчитать максимумы
-    html.find('input[name^="system.base."]').on("change", ev => this._onBaseChanged(ev));
-    // Кнопка уворота
+
+    // ✅ Один раз инициализируем ресурсы, если актёр старый/пустой
+    this._ensureResourceDefaults();
+
+    // ✅ Меняем любой базовый стат → читаем ВСЕ базовые из формы → одним апдейтом сохраняем + пересчитываем максы
+    html.find('input[name^="system.base."]').on("change", () => this._saveBaseAndRecalc());
+
+    // Кнопка «Уворот»
     html.find('[data-action="dodge"]').on("click", () => this._rollDodge());
   }
 
-  /** Сохранить форму → пересчитать макс-значения ресурсов */
-  async _onBaseChanged(ev) {
-    await this._onSubmit(ev); // вызовет _updateObject и запишет поле
+  /** Если ресурсы пустые — проинициализировать из формул (без трогания базовых статов) */
+  async _ensureResourceDefaults() {
+    const sys = this.actor.system ?? {};
+    const base = sys.base ?? {};
+    const res  = sys.resources ?? {};
 
-    const base = this.actor.system?.base ?? {};
-    const vyn  = Number(base.vyn ?? 0);
-    const sil  = Number(base.sil ?? 0);
-    const chkr = Number(base.chkr ?? 0);
+    const N = v => Number(v ?? 0);
+    const vyn  = N(base.vyn);
+    const sil  = N(base.sil);
+    const chkr = N(base.chkr);
 
     const chakraMax = chkr * 100;
     const shieldMax = vyn * 5 + sil * 2;
     const hpMax     = vyn * 10 + 50;
 
+    const needsInit =
+      !res?.hp?.max && !res?.shield?.max && !res?.chakra?.max;
+
+    if (!needsInit) return;
+
+    await this.actor.update({
+      "system.resources.hp.max": hpMax,
+      "system.resources.hp.value": hpMax,
+      "system.resources.shield.max": shieldMax,
+      "system.resources.shield.value": shieldMax,
+      "system.resources.chakra.max": chakraMax,
+      "system.resources.chakra.value": chakraMax
+    });
+  }
+
+  /** Считать базовые из формы → сохранить все разом → пересчитать и записать максимумы */
+  async _saveBaseAndRecalc() {
+    // читаем ПРЯМО из формы, чтобы ничего не терялось
+    const getNum = (name) => Number(this.element.find(`input[name="${name}"]`).val() || 0);
+
+    const skr  = getNum("system.base.skr");
+    const chkr = getNum("system.base.chkr");
+    const pcht = getNum("system.base.pcht");
+    const sil  = getNum("system.base.sil");
+    const rkc  = getNum("system.base.rkc");
+    const vyn  = getNum("system.base.vyn");
+
+    // производные
+    const chakraMax = chkr * 100;
+    const shieldMax = vyn * 5 + sil * 2;
+    const hpMax     = vyn * 10 + 50;
+
+    // аккуратно подрежем текущие значения под новые максимумы
     const res = foundry.utils.duplicate(this.actor.system.resources ?? {});
     const clamp = (val, max) => Math.max(0, Math.min(Number(val||0), Number(max||0)));
 
-    await this.actor.update({
+    const updates = {
+      // сохраняем ВСЕ базовые статы (в т.ч. те, которые ты не менял)
+      "system.base.skr":  skr,
+      "system.base.chkr": chkr,
+      "system.base.pcht": pcht,
+      "system.base.sil":  sil,
+      "system.base.rkc":  rkc,
+      "system.base.vyn":  vyn,
+
+      // пересчитанные максимумы ресурсов
       "system.resources.chakra.max": chakraMax,
       "system.resources.shield.max": shieldMax,
       "system.resources.hp.max": hpMax,
-      "system.resources.chakra.value": clamp(res.chakra?.value ?? 0, chakraMax),
-      "system.resources.shield.value": clamp(res.shield?.value ?? 0, shieldMax),
+
+      // подрезанные текущие значения
+      "system.resources.chakra.value": clamp(res.chakra?.value ?? chakraMax, chakraMax),
+      "system.resources.shield.value": clamp(res.shield?.value ?? shieldMax, shieldMax),
       "system.resources.hp.value": clamp(res.hp?.value ?? hpMax, hpMax)
-    });
+    };
+
+    await this.actor.update(updates);
   }
 
   /** Бросок уворота: 1d20 + РКЦ */
@@ -112,13 +162,10 @@ class ShinobiCharacterSheet extends ActorSheet {
   }
 }
 
-/** Регистрация (надёжный способ для v13) */
+/** Регистрация */
 Hooks.once("init", async () => {
   console.log("[SJ] init start");
   await loadTemplates(["systems/shinjidaishinobi/templates/actor/character-sheet.html"]);
-  console.log("[SJ] templates loaded");
-
-  // Регистрируем лист через DocumentSheetConfig — это самый совместимый способ
   DocumentSheetConfig.registerSheet(Actor, "shinjidaishinobi", ShinobiCharacterSheet, {
     types: ["character"],
     makeDefault: true,
