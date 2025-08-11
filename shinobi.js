@@ -1,9 +1,12 @@
-// Shin Jidai: Shinobi — v13 minimal
+// Shin Jidai: Shinobi — v13 совместимая версия
+const { ActorSheetV2 } = foundry.applications.sheets;
+const { Actor } = foundry.documents;
+
 class ShinobiActor extends Actor {
   prepareDerivedData() {
     super.prepareDerivedData();
 
-    const sys = this.system ?? {};
+    const sys = this.system;
     const A = sys.abilities ?? {};
 
     const SKR  = Number(A.skr?.value  ?? 0);
@@ -16,57 +19,57 @@ class ShinobiActor extends Actor {
     sys.derived ??= {};
     sys.resources ??= {};
 
-    // Производные — читаемые значения (не апдейтим документ!)
-    sys.derived.speed   = { value: SKR * 1 };
-    sys.derived.actions = { value: PCHT * 1 };
+    // Производные
+    sys.derived.speed   = { value: SKR };
+    sys.derived.actions = { value: PCHT };
 
-    // Покров (max) — VIT*5 + STR*2
+    // Покров
     const shroudMax = VIT * 5 + STR * 2;
-    const shroudVal = Number(sys.resources.shroud?.value ?? shroudMax);
-    sys.resources.shroud = { value: shroudVal, max: shroudMax };
+    sys.resources.shroud = {
+      value: sys.resources.shroud?.value ?? shroudMax,
+      max: shroudMax
+    };
 
-    // Чакра (max) — CKR*100
+    // Чакра
     const chakraMax = CKR * 100;
-    const chakraVal = Number(sys.resources.chakra?.value ?? chakraMax);
-    sys.resources.chakra = { value: chakraVal, max: chakraMax };
+    sys.resources.chakra = {
+      value: sys.resources.chakra?.value ?? chakraMax,
+      max: chakraMax
+    };
 
-    // HP и пороги (пока max=100 как в описании)
+    // HP и пороги
     const hpMax = 100;
-    const hpVal = Number(sys.resources.hp?.value ?? hpMax);
-    sys.resources.hp = { value: hpVal, max: hpMax };
+    sys.resources.hp = {
+      value: sys.resources.hp?.value ?? hpMax,
+      max: hpMax
+    };
 
-    const faint = VIT * 2 + 10;
-    const maim  = VIT * 5 + 20;
-    const dying = VIT * 10 + 50;
-    sys.derived.thresholds = { faint, maim, dying };
-
-    this.system = sys; // гарантируем ссылки
+    sys.derived.thresholds = {
+      faint: VIT * 2 + 10,
+      maim: VIT * 5 + 20,
+      dying: VIT * 10 + 50
+    };
   }
 }
 
-class ShinobiActorSheet extends ActorSheet {
+class ShinobiActorSheet extends ActorSheetV2 {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["shinobi", "sheet", "actor"],
       template: "systems/shin-jidai-shinobi/templates/actor-sheet.html",
       width: 640,
-      height: 720,
-      tabs: [{ navSelector: ".tabs", contentSelector: ".sheet-body", initial: "stats" }]
+      height: 720
     });
   }
 
-  async getData(options) {
-    const data = await super.getData(options);
-    return data; // system.* уже включает производные
+  async _updateObject(event, formData) {
+    const expanded = foundry.utils.expandObject(formData);
+    await this.actor.update(expanded);
   }
-
 }
 
 Hooks.once("init", () => {
-  // Назначаем класс документа
   CONFIG.Actor.documentClass = ShinobiActor;
-
-  // Назначаем лист по умолчанию
-  Actors.unregisterSheet("core", ActorSheet);
+  Actors.unregisterSheet("core", ActorSheetV2);
   Actors.registerSheet("shin-jidai-shinobi", ShinobiActorSheet, { makeDefault: true });
 });
