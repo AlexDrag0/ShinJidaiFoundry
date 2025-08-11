@@ -1,8 +1,8 @@
 {
-  "id": "shinjidaishinobi",
+  "id": "shin-jidai",
   "title": "Shin Jidai: Shinobi",
   "description": "Авторская ролевая система по мотивам Наруто для Foundry VTT.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
