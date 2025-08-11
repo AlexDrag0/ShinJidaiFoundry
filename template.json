@@ -4,25 +4,25 @@
     "templates": {
       "base": {
         "abilities": {
-          "skr": {"value": 5},
-          "ckr": {"value": 1},
-          "pcht":{"value": 2},
-          "str": {"value": 0},
-          "rcx": {"value": 0},
-          "vit": {"value": 5}
+          "skr":  { "value": 5 },
+          "ckr":  { "value": 1 },
+          "pcht": { "value": 2 },
+          "str":  { "value": 0 },
+          "rcx":  { "value": 0 },
+          "vit":  { "value": 5 }
         },
         "resources": {
-          "hp":     {"value": 100},
-          "chakra": {"value": 100},
-          "shroud": {"value": 35}
+          "hp":     { "value": 100 },
+          "chakra": { "value": 100 },
+          "shroud": { "value": 35 }
         },
         "derived": {
-          "speed":  {"value": 5},
-          "actions":{"value": 2},
+          "speed":   { "value": 5 },
+          "actions": { "value": 2 },
           "thresholds": { "faint": 20, "maim": 45, "dying": 100 }
         }
       }
     },
-    "shinobi": {"templates": ["base"]}
+    "shinobi": { "templates": ["base"] }
   }
 }
