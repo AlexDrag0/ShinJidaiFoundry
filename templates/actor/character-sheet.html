@@ -1,118 +1,62 @@
-<form class="shinobi-sheet" autocomplete="off">
-  <header class="sheet-header">
-    <h1><input name="name" type="text" value="{{actor.name}}" placeholder="Имя персонажа" /></h1>
-  </header>
+<!-- Пример блока основных характеристик -->
+<div class="grid abilities">
+  <label>СКР</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.skr.value"
+         value="{{system.abilities.skr.value}}" />
 
-  <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="stats">📊 Статы</a>
-    <a class="item" data-tab="combat">🗡 Бой</a>
-    <a class="item" data-tab="skills">🎯 Навыки</a>
-    <a class="item" data-tab="story">📜 История</a>
-    <a class="item" data-tab="inventory">📦 Инвентарь</a>
-    <a class="item" data-tab="abilities">⚡ Способности</a>
-    <a class="item" data-tab="conditions">💀 Состояния</a>
-  </nav>
+  <label>ЧКР</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.ckr.value"
+         value="{{system.abilities.ckr.value}}" />
 
-  <section class="sheet-body">
-    <!-- 📊 БАЗОВЫЕ СТАТЫ + РЕСУРСЫ -->
-    <div class="tab" data-group="primary" data-tab="stats">
-      <div class="grid two">
-        <section>
-          <h2>Основные характеристики</h2>
-          <div class="stat-grid">
-            <label>СКР (Скорость)
-              <input type="number" min="0" max="10" name="system.base.skr"  value="{{system.base.skr}}"/>
-            </label>
-            <label>ЧКР (Чакра)
-              <input type="number" min="0" max="10" name="system.base.chkr" value="{{system.base.chkr}}"/>
-            </label>
-            <label>ПЧТ (Печати)
-              <input type="number" min="0" max="10" name="system.base.pcht" value="{{system.base.pcht}}"/>
-            </label>
-            <label>СИЛ (Сила)
-              <input type="number" min="0" max="10" name="system.base.sil"  value="{{system.base.sil}}"/>
-            </label>
-            <label>РКЦ (Реакция)
-              <input type="number" min="0" max="10" name="system.base.rkc"  value="{{system.base.rkc}}"/>
-            </label>
-            <label>ВЫН (Выносливость)
-              <input type="number" min="0" max="10" name="system.base.vyn"  value="{{system.base.vyn}}"/>
-            </label>
-          </div>
+  <label>ПЧТ</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.pcht.value"
+         value="{{system.abilities.pcht.value}}" />
 
-          <h2>Производные</h2>
-          <table class="info">
-            <tr><th>Скорость (гексов/ход)</th><td>{{derived.speed}}</td></tr>
-            <tr><th>Печати (действий/ход)</th><td>{{derived.seals}}</td></tr>
-            <tr><th>Чакра (макс)</th><td>{{derived.chakraMax}}</td></tr>
-            <tr><th>Покров чакры (макс)</th><td>{{derived.shieldMax}}</td></tr>
-          </table>
+  <label>СИЛ</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.str.value"
+         value="{{system.abilities.str.value}}" />
 
-          <h3>Пороги здоровья</h3>
-          <table class="info">
-            <tr><th>Потеря сознания</th><td>{{derived.thresholds.knockdown}}</td></tr>
-            <tr><th>Увечье</th><td>{{derived.thresholds.injury}}</td></tr>
-            <tr><th>Предсмертное состояние</th><td>{{derived.thresholds.nearDeath}}</td></tr>
-          </table>
-        </section>
+  <label>РКЦ</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.rcx.value"
+         value="{{system.abilities.rcx.value}}" />
 
-        <section>
-          <h2>Ресурсы</h2>
-          <label>HP (текущее / макс)
-            <input type="number" name="system.resources.hp.value" value="{{system.resources.hp.value}}"/>
-          </label>
-          <div class="sj-bar" title="{{system.resources.hp.value}} / {{derived.thresholds.nearDeath}}">
-            <span style="width: {{derived.bars.hp}}%"></span>
-          </div>
+  <label>ВЫН</label>
+  <input type="number" data-dtype="Number"
+         name="system.abilities.vit.value"
+         value="{{system.abilities.vit.value}}" />
+</div>
 
-          <label>Покров чакры (текущее / макс)
-            <input type="number" name="system.resources.shield.value" value="{{system.resources.shield.value}}"/>
-          </label>
-          <div class="sj-bar" title="{{system.resources.shield.value}} / {{derived.shieldMax}}">
-            <span style="width: {{derived.bars.shield}}%"></span>
-          </div>
+<!-- Производные (read-only) -->
+<div class="derived">
+  <div>Скорость: {{system.derived.speed.value}}</div>
+  <div>Действия: {{system.derived.actions.value}}</div>
+</div>
 
-          <label>Чакра (текущее / макс)
-            <input type="number" name="system.resources.chakra.value" value="{{system.resources.chakra.value}}"/>
-          </label>
-          <div class="sj-bar" title="{{system.resources.chakra.value}} / {{derived.chakraMax}}">
-            <span style="width: {{derived.bars.chakra}}%"></span>
-          </div>
+<!-- Ресурсы -->
+<section class="resources">
+  <div class="res">
+    <label>HP</label>
+    <input type="number" data-dtype="Number" name="system.resources.hp.value" value="{{system.resources.hp.value}}"/>
+    <progress value="{{system.resources.hp.value}}" max="{{system.resources.hp.max}}"></progress>
+    <small>max: {{system.resources.hp.max}}</small>
+  </div>
 
-          <p class="hint">Максимумы ресурсов пересчитываются автоматически при изменении ВЫН/СИЛ/ЧКР.</p>
-        </section>
-      </div>
-    </div>
+  <div class="res">
+    <label>Покров</label>
+    <input type="number" data-dtype="Number" name="system.resources.shroud.value" value="{{system.resources.shroud.value}}"/>
+    <progress value="{{system.resources.shroud.value}}" max="{{system.resources.shroud.max}}"></progress>
+    <small>max: {{system.resources.shroud.max}}</small>
+  </div>
 
-    <!-- 🗡 Бой -->
-    <div class="tab" data-group="primary" data-tab="combat">
-      <button type="button" class="sj-btn" data-action="dodge">🎲 Уворот (d20 + РКЦ)</button>
-      <p class="hint">Скоро добавим тестовую «Атаку» и отмену/защиту.</p>
-    </div>
-
-    <!-- 🎯 Навыки -->
-    <div class="tab" data-group="primary" data-tab="skills">
-      <p>Проф. характеристики (Ниндзюцу, Гендзюцу, Тайдзюцу, Медзюцу) добавим как список с уровнями 0–6.</p>
-    </div>
-
-    <!-- 📜 История -->
-    <div class="tab" data-group="primary" data-tab="story">
-      <textarea name="system.story.biography" rows="8" placeholder="Биография, заметки…">{{system.story.biography}}</textarea>
-    </div>
-
-    <!-- 📦 Инвентарь -->
-    <div class="tab" data-group="primary" data-tab="inventory">
-      <p>Позже: предметы, вес, автоподсчёт.</p>
-    </div>
-
-    <!-- ⚡ Способности -->
-    <div class="tab" data-group="primary" data-tab="abilities">
-      <p>Сюда попадут техники с кнопками «Применить».</p>
-    </div>
-
-    <!-- 💀 Состояния -->
-    <div class="tab" data-group="primary" data-tab="conditions">
-      <p>Статусы: нокдаун, увечье, предсмертное, стабилизация и т.д.</p>
-    </div>
-  </section>
-</form>
+  <div class="res">
+    <label>Чакра</label>
+    <input type="number" data-dtype="Number" name="system.resources.chakra.value" value="{{system.resources.chakra.value}}"/>
+    <progress value="{{system.resources.chakra.value}}" max="{{system.resources.chakra.max}}"></progress>
+    <small>max: {{system.resources.chakra.max}}</small>
+  </div>
+</section>
