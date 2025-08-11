@@ -60,9 +60,6 @@ class ShinobiActorSheet extends ActorSheet {
     return data; // system.* уже включает производные
   }
 
-  async _updateObject(event, formData) {
-    await this.actor.update(formData);
-  }
 }
 
 Hooks.once("init", () => {
