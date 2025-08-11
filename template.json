@@ -4,12 +4,12 @@
     "templates": {
       "base": {
         "abilities": {
-          "skr": {"value": 5},   // Скорость
-          "ckr": {"value": 1},   // Чакра (хара)
-          "pcht":{"value": 2},   // Печати
-          "str": {"value": 0},   // Сила
-          "rcx": {"value": 0},   // Реакция
-          "vit": {"value": 5}    // Выносливость
+          "skr": {"value": 5},
+          "ckr": {"value": 1},
+          "pcht":{"value": 2},
+          "str": {"value": 0},
+          "rcx": {"value": 0},
+          "vit": {"value": 5}
         },
         "resources": {
           "hp":     {"value": 100},
