@@ -1,74 +1,75 @@
-// shinobi.js
+// Shin Jidai: Shinobi — v13 minimal
 class ShinobiActor extends Actor {
   prepareDerivedData() {
     super.prepareDerivedData();
 
-    const sys = this.system;
-    const A = sys.abilities;
+    const sys = this.system ?? {};
+    const A = sys.abilities ?? {};
 
-    // Читаемые значения (игрок может менять в листе)
-    const SKR = Number(A.skr?.value ?? 0);
-    const CKR = Number(A.ckr?.value ?? 0);
-    const PCHT= Number(A.pcht?.value ?? 0);
-    const STR = Number(A.str?.value ?? 0);
-    const RCX = Number(A.rcx?.value ?? 0);
-    const VIT = Number(A.vit?.value ?? 0);
+    const SKR  = Number(A.skr?.value  ?? 0);
+    const CKR  = Number(A.ckr?.value  ?? 0);
+    const PCHT = Number(A.pcht?.value ?? 0);
+    const STR  = Number(A.str?.value  ?? 0);
+    const RCX  = Number(A.rcx?.value  ?? 0);
+    const VIT  = Number(A.vit?.value  ?? 0);
 
-    // Производные (НЕ сохраняем через update, просто кладём в this.system)
     sys.derived ??= {};
     sys.resources ??= {};
 
-    // 1) Скорость, Печати
+    // Производные — читаемые значения (не апдейтим документ!)
     sys.derived.speed   = { value: SKR * 1 };
     sys.derived.actions = { value: PCHT * 1 };
 
-    // 2) Покров чакры (max) и текущее значение (не затираем value)
+    // Покров (max) — VIT*5 + STR*2
     const shroudMax = VIT * 5 + STR * 2;
-    const currentShroud = Number(sys.resources.shroud?.value ?? shroudMax);
-    sys.resources.shroud = { value: currentShroud, max: shroudMax };
+    const shroudVal = Number(sys.resources.shroud?.value ?? shroudMax);
+    sys.resources.shroud = { value: shroudVal, max: shroudMax };
 
-    // 3) Макс. чакра
+    // Чакра (max) — CKR*100
     const chakraMax = CKR * 100;
-    const currentChakra = Number(sys.resources.chakra?.value ?? chakraMax);
-    sys.resources.chakra = { value: currentChakra, max: chakraMax };
+    const chakraVal = Number(sys.resources.chakra?.value ?? chakraMax);
+    sys.resources.chakra = { value: chakraVal, max: chakraMax };
 
-    // 4) HP пороги
+    // HP и пороги (пока max=100 как в описании)
+    const hpMax = 100;
+    const hpVal = Number(sys.resources.hp?.value ?? hpMax);
+    sys.resources.hp = { value: hpVal, max: hpMax };
+
     const faint = VIT * 2 + 10;
     const maim  = VIT * 5 + 20;
     const dying = VIT * 10 + 50;
-    // Пример: базовый max HP = 100 (как у тебя в описании); можно вынести в формулу позже
-    const hpMax = 100;
-    const currentHP = Number(sys.resources.hp?.value ?? hpMax);
-    sys.resources.hp = { value: currentHP, max: hpMax };
-
     sys.derived.thresholds = { faint, maim, dying };
 
-    // На будущее: можно переопределить modifyTokenAttribute для особой логики баров. :contentReference[oaicite:4]{index=4}
+    this.system = sys; // гарантируем ссылки
   }
 }
 
-// Регистрируем документ и шит
 class ShinobiActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["shinobi", "sheet", "actor"],
       template: "systems/shin-jidai-shinobi/templates/actor-sheet.html",
-      width: 600, height: 700, tabs: [{navSelector: ".tabs", contentSelector: ".sheet-body", initial: "stats"}]
+      width: 640,
+      height: 720,
+      tabs: [{ navSelector: ".tabs", contentSelector: ".sheet-body", initial: "stats" }]
     });
   }
+
   async getData(options) {
     const data = await super.getData(options);
-    return data; // system.* уже с производными
+    return data; // system.* уже включает производные
   }
+
   async _updateObject(event, formData) {
-    // КЛЮЧЕВОЕ: просто обновляем actor — Foundry сам сопоставит name="system.***"
     await this.actor.update(formData);
   }
 }
 
 Hooks.once("init", () => {
-  // Назначаем свой класс актёра и лист
+  // Назначаем класс документа
   CONFIG.Actor.documentClass = ShinobiActor;
+
+  // Назначаем лист по умолчанию
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet("shin-jidai-shinobi", ShinobiActorSheet, { makeDefault: true });
 });
